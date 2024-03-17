@@ -36,6 +36,7 @@ async function handler(ctx) {
     // 直接调用拷贝漫画的接口
     const host = 'copymanga.site';
     const baseUrl = `https://${host}`;
+    const proxyApiBaseUrl = `${process.env.ANTI_SPIDER_PROXY}/api.${host}`;
     const apiBaseUrl = `https://api.${host}`;
     const strBaseUrl = `${apiBaseUrl}/api/v3/comic/${id}/group/default/chapters`;
     const iReqLimit = 500;
@@ -104,7 +105,7 @@ async function handler(ctx) {
     const genResult = async (chapter) => {
         const {
             data: { code, results },
-        } = await got(`${apiBaseUrl}/api/v3/comic/${id}/chapter/${chapter.uuid}`, {
+        } = await got(`${process.env.ANTI_SPIDER_PROXY} ? ${proxyApiBaseUrl} : ${apiBaseUrl}/api/v3/comic/${id}/chapter/${chapter.uuid}`, {
             headers: {
                 webp: 1,
             },
@@ -134,7 +135,7 @@ async function handler(ctx) {
         return results;
     };
 
-    const result = await asyncPoolAll(3, chapterArray.slice(0, chapterCnt), (chapter) => cache.tryGet(chapter.link, () => genResult(chapter)));
+    const result = await asyncPoolAll(3, chapterArray.slice(0, chapterCnt), (chapter) => cache.tryGet(chapter.link, () => genResult(chapter), 86400*30));
     const items = [...result, ...chapterArray.slice(chapterCnt)];
 
     return {
