@@ -105,7 +105,7 @@ async function handler(ctx) {
     const genResult = async (chapter) => {
         const {
             data: { code, results },
-        } = await got(`${process.env.ANTI_SPIDER_PROXY} ? ${proxyApiBaseUrl} : ${apiBaseUrl}/api/v3/comic/${id}/chapter/${chapter.uuid}`, {
+        } = await got(`${process.env.ANTI_SPIDER_PROXY ? proxyApiBaseUrl : apiBaseUrl}/api/v3/comic/${id}/chapter/${chapter.uuid}`, {
             headers: {
                 webp: 1,
             },
